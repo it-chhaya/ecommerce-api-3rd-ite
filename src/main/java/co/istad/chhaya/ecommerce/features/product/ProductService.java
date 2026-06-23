@@ -2,8 +2,19 @@ package co.istad.chhaya.ecommerce.features.product;
 
 import co.istad.chhaya.ecommerce.features.product.dto.CreateProductRequest;
 import co.istad.chhaya.ecommerce.features.product.dto.ProductResponse;
+import org.springframework.data.domain.Page;
 
 public interface ProductService {
+
+
+    /**
+     * Find products by pagination
+     * @param pageNumber
+     * @param pageSize
+     * @return
+     */
+    Page<ProductResponse> findAll(int pageNumber, int pageSize);
+
 
     /**
      * Create a new product

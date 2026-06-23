@@ -4,6 +4,7 @@ import co.istad.chhaya.ecommerce.features.product.dto.CreateProductRequest;
 import co.istad.chhaya.ecommerce.features.product.dto.ProductResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,16 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
 
     private final ProductService productService;
+
+    
+    @GetMapping
+    public Page<ProductResponse> findAll(
+            @RequestParam(required = false, defaultValue = "0") int pageNumber,
+            @RequestParam(required = false, defaultValue = "25") int pageSize
+    ) {
+        return productService.findAll(pageNumber, pageSize);
+    }
+
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
