@@ -1,6 +1,5 @@
-package co.istad.chhaya.ecommerce.repository;
+package co.istad.chhaya.ecommerce.features.order;
 
-import co.istad.chhaya.ecommerce.domain.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

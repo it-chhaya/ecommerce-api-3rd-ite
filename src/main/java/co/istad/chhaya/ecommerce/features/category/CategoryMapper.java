@@ -1,8 +1,7 @@
-package co.istad.chhaya.ecommerce.mapper;
+package co.istad.chhaya.ecommerce.features.category;
 
-import co.istad.chhaya.ecommerce.domain.Category;
-import co.istad.chhaya.ecommerce.dto.CategoryResponse;
-import co.istad.chhaya.ecommerce.dto.CreateCategoryRequest;
+import co.istad.chhaya.ecommerce.features.category.dto.CategoryResponse;
+import co.istad.chhaya.ecommerce.features.category.dto.CreateCategoryRequest;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

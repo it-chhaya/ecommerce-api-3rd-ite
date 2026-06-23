@@ -1,5 +1,6 @@
-package co.istad.chhaya.ecommerce.domain;
+package co.istad.chhaya.ecommerce.features.category;
 
+import co.istad.chhaya.ecommerce.features.product.Product;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

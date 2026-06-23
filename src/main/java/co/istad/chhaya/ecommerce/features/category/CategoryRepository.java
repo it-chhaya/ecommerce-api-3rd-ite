@@ -1,6 +1,5 @@
-package co.istad.chhaya.ecommerce.repository;
+package co.istad.chhaya.ecommerce.features.category;
 
-import co.istad.chhaya.ecommerce.domain.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

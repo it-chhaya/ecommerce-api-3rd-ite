@@ -1,4 +1,4 @@
-package co.istad.chhaya.ecommerce.dto;
+package co.istad.chhaya.ecommerce.features.category.dto;
 
 import lombok.Builder;
 
