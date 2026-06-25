@@ -96,4 +96,21 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
 
+    @Override
+    public void deleteByName(String name) {
+        FileUpload fileUpload = fileUploadRepository.findByName(name)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "File has not been found"));
+        fileUploadRepository.delete(fileUpload);
+
+        // Create absolute path to store file
+        Path path = Paths.get(storageLocation + fileUpload.getName() + "." + fileUpload.getExtension());
+        try {
+            boolean isExisted = Files.deleteIfExists(path);
+            if (!isExisted)
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File has not been found");
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "File has been failed to delete");
+        }
+    }
+
 }

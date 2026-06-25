@@ -16,4 +16,6 @@ public interface FileUploadService {
 
     FileUploadResponse upload(MultipartFile file);
 
+    void deleteByName(String name);
+
 }
