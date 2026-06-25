@@ -12,11 +12,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class FileUploadServiceImpl implements FileUploadService {
+
+    private final FileUploadRepository fileUploadRepository;
 
     @Value("${file.storage-location}")
     private String storageLocation;
@@ -25,8 +30,20 @@ public class FileUploadServiceImpl implements FileUploadService {
     private String baseUri;
 
     @Override
-    public FileUploadResponse upload(MultipartFile file) {
+    public List<FileUploadResponse> uploadMultiple(List<MultipartFile> files) {
+        // YOUR MORE LOGIC HERE...
+        return files.stream()
+                .map(this::saveFile)
+                .collect(Collectors.toList());
+    }
 
+    @Override
+    public FileUploadResponse upload(MultipartFile file) {
+        return saveFile(file);
+    }
+
+
+    private FileUploadResponse saveFile(MultipartFile file) {
         // Prepare file information
         // File name
         String name = UUID.randomUUID().toString();
@@ -35,10 +52,8 @@ public class FileUploadServiceImpl implements FileUploadService {
         String ext = file.getOriginalFilename()
                 .substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 
-        name += "." + ext; // new-unique-filename.ext
-
         // Create absolute path to store file
-        Path path = Paths.get(storageLocation + name);
+        Path path = Paths.get(storageLocation + name + "." + ext);
 
         try {
             Files.copy(file.getInputStream(), path);
@@ -47,11 +62,21 @@ public class FileUploadServiceImpl implements FileUploadService {
                     "File has been failed to upload");
         }
 
+        // Save information file into db
+        FileUpload fileUpload = new FileUpload();
+        fileUpload.setName(name);
+        fileUpload.setExtension(ext);
+        fileUpload.setCaption("ISTAD - Advanced IT Institute in Cambodia");
+        fileUpload.setSize(file.getSize());
+        fileUpload.setMediaType(file.getContentType());
+        fileUploadRepository.save(fileUpload);
+
         return FileUploadResponse.builder()
-                .name(name)
-                .size(file.getSize())
-                .mediaType(file.getContentType())
-                .uri(baseUri + name)
+                .name(fileUpload.getName())
+                .extension(fileUpload.getExtension())
+                .size(fileUpload.getSize())
+                .mediaType(fileUpload.getMediaType())
+                .uri(baseUri + fileUpload.getName() + "." + fileUpload.getExtension())
                 .build();
     }
 
