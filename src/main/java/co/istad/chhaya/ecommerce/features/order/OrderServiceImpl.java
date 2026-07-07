@@ -4,9 +4,13 @@ import co.istad.chhaya.ecommerce.features.order.dto.CreateOrderRequest;
 import co.istad.chhaya.ecommerce.features.order.dto.OrderResponse;
 import co.istad.chhaya.ecommerce.features.product.Product;
 import co.istad.chhaya.ecommerce.features.product.ProductRepository;
+import co.istad.chhaya.ecommerce.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -58,8 +62,7 @@ public class OrderServiceImpl implements OrderService {
 
         order.setOrderLines(orderLines);
 
-        // Security related
-        order.setCustomerId("ISTAD");
+        order.setCustomerId(SecurityUtils.extractUserId());
 
         order.setIsDeleted(false);
         order.setOrderedAt(LocalDateTime.now());

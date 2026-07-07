@@ -3,6 +3,11 @@ file:
   storage-location: /Users/chanchhaya/Pictures/ite-file/
   base-uri: http://localhost:${server.port}${file.client-path}/
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9999/realms/ite-ecommerce
   servlet:
     multipart:
       max-file-size: 10MB
