@@ -28,3 +28,9 @@ spring:
     name: ite-3rd-ecommerce
 server:
   port: 9990
+keycloak:
+  server-url: http://localhost:9999
+  realm: master
+  target-realm: ite-ecommerce
+  client-id: ite-ecommerce-spring-api
+  client-secret: w97HOzRTq17Bwfw4xlidCEzL8YxWtfWF
