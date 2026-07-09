@@ -61,6 +61,7 @@ public class SecurityConfig {
         // Anonymouse, Authenticated, Authorization
         http.authorizeHttpRequests(endpoints -> endpoints
                 .requestMatchers("/api/v1/files/**").permitAll()
+                .requestMatchers("/api/v1/auth/register").permitAll()
                 .anyRequest().authenticated()
         );
 
