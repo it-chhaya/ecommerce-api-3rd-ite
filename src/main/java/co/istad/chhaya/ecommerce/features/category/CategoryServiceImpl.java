@@ -2,61 +2,81 @@ package co.istad.chhaya.ecommerce.features.category;
 
 import co.istad.chhaya.ecommerce.features.category.dto.CategoryResponse;
 import co.istad.chhaya.ecommerce.features.category.dto.CreateCategoryRequest;
+import co.istad.chhaya.ecommerce.features.category.dto.UpdateCategoryRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
-//    public CategoryServiceImpl(CategoryRepository categoryRepository) {
-//        this.categoryRepository = categoryRepository;
-//    }
-
     @Override
-    public CategoryResponse createNew(CreateCategoryRequest createCategoryRequest) {
-        log.info("createNew {}", createCategoryRequest);
+    public CategoryResponse createCategory(CreateCategoryRequest createCategoryRequest) {
+        log.info("createCategory: {}", createCategoryRequest);
 
-        // Validate category name
-        boolean isExisting = categoryRepository
-                .existsByName(createCategoryRequest.name());
-        if (isExisting)
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Category has already been used"
-            );
-
-        Category parentCategory = null;
-
-        // Validate parent category
-        if (createCategoryRequest.parentCategoryId() != null) {
-            parentCategory = categoryRepository
-                    .findById(createCategoryRequest.parentCategoryId())
-                    .orElseThrow(() -> new ResponseStatusException(
-                            HttpStatus.NOT_FOUND,
-                            "Parent category has not been found"
-                    ));
+        if (categoryRepository.existsByName(createCategoryRequest.name())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Category is existed!");
         }
 
-        Category category = categoryMapper
-                .mapCreateCategoryRequestToCategory(createCategoryRequest);
+        Category category = categoryMapper.categoryRequestToCategory(createCategoryRequest);
 
-        // System generated data
-        category.setIsDeleted(false);
-        category.setParentCategory(parentCategory);
-
-        // Insert if primary key is null
-        // Update if primary key has value
         category = categoryRepository.save(category);
 
-        return categoryMapper.mapCategoryToCategoryResponse(category);
+        return categoryMapper.categoryToCategoryResponse(category);
     }
 
+    @Override
+    public Page<CategoryResponse> findCategories(int pageNumber, int pageSize) {
+        Sort sortById = Sort.by(Sort.Direction.DESC, "id");
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sortById);
+        return categoryRepository
+                .findAll(pageRequest)
+                .map(categoryMapper::categoryToCategoryResponse);
+    }
+
+    @Override
+    public CategoryResponse findCategoryById(Integer categoryId) {
+        return categoryRepository
+                .findById(categoryId)
+                .map(categoryMapper::categoryToCategoryResponse)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found!"));
+    }
+
+    @Override
+    public CategoryResponse updateCategory(Integer id, UpdateCategoryRequest updateCategoryRequest) {
+        log.info("updateCategory: {}", updateCategoryRequest);
+
+        if (categoryRepository.existsByName(updateCategoryRequest.name())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Category is existed!");
+        }
+
+        Category checkedCategory = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found!"));
+
+        checkedCategory.setName(updateCategoryRequest.name());
+        checkedCategory.setIsDeleted(updateCategoryRequest.isDeleted());
+
+        checkedCategory = categoryRepository.save(checkedCategory);
+
+        return categoryMapper.categoryToCategoryResponse(checkedCategory);
+    }
+
+
+    @Override
+    public void deleteCategory(Integer categoryId) {
+        log.info("deleteCategory: {}", categoryId);
+        Category checkedCategory = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found!"));
+        categoryRepository.delete(checkedCategory);
+    }
 }
